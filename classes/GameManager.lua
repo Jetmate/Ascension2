@@ -27,8 +27,8 @@ function GameManager:constructor(
 end
 
 function GameManager:scale(direction)
-	if not (self.scale_index == 1 and direction == -1) and 
-		 not (self.scale_index == #self.scales and direction == 1) then    
+	if not (self.scale_index == 1 and direction == -1) and
+		 not (self.scale_index == #self.scales and direction == 1) then
     love.graphics.scale(self.scales[self.scale_index + direction] / self.scales[self.scale_index])
     self.scale_index = self.scale_index + direction
   end
@@ -40,7 +40,6 @@ function GameManager:reset_transition()
 		quadratic:reset()
 	end
 end
-
 
 classtools.callable(GameManager)
 

@@ -10,12 +10,6 @@ function SingleSpriteManager:current_sprite()
   return self.sprite
 end
 
-local function constructor(t, coords, sprite_sheet, sprite, size, directions)
-  Thing.constructor(t, coords, size)
-  t:constructor(sprite_sheet, sprite, directions)
-end
-
 classtools.inherit(SingleSpriteManager, SpriteManager)
-classtools.callable(SingleSpriteManager)
 
 return SingleSpriteManager

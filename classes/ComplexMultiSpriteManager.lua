@@ -19,12 +19,6 @@ function ComplexMultiSpriteManager:update_sprites(dt, reset)
   end
 end
 
-local function constructor(t, coords, sprite_sheet, sprites, defualt_sprite_type, sprite_speeds, size, directions)
-  Thing.constructor(t, coords, size)
-  t:constructor(sprite_sheet, sprites, default_sprite_type, sprite_speeds, directions)
-end
-
 classtools.inherit(ComplexMultiSpriteManager, MultiSpriteManager)
-classtools.callable(ComplexMultiSpriteManager)
 
 return ComplexMultiSpriteManager

@@ -27,6 +27,4 @@ function MovingThing:reset_velocity()
   self.velocity = Vector()
 end
 
-classtools.callable(MovingThing)
-
 return MovingThing
