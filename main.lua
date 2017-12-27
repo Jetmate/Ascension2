@@ -28,7 +28,7 @@ function love.load(arg)
 
   love.graphics.setDefaultFilter('nearest', 'nearest')
   love.graphics.setBackgroundColor(152, 152, 152)
-  
+
   local SCALES = {1, 2, 3, 5, 10, 20}
   local GRAVITY = 270
   local COLOR_AMOUNT = 5
@@ -39,7 +39,7 @@ function love.load(arg)
   local SCALE_INDEX = 3
 
   game_manager = GameManager(
-    SCALES, 
+    SCALES,
     SCALE_INDEX,
     DISPLAY_SIZE,
     LEVEL_SIZE,
@@ -47,7 +47,7 @@ function love.load(arg)
   )
 
 
-  local tile_sheet_image = love.graphics.newImage('tile_sheet.png')
+  local tile_sheet_image = love.graphics.newImage('resources/tile_sheet.png')
   local tile_sheet = TileSheet(tile_sheet_image, BLOCK_SIZE)
   local tile_sprites = {
     block = tile_sheet:get_tile(),
@@ -93,8 +93,8 @@ function love.load(arg)
   local tile_types = {solid = {'block'}, directional = {'spike'}}
 
   level_manager = LevelManager(
-    love.graphics.newImage('tiles.png'):getData(),
-    love.graphics.newImage('directions.png'):getData(),
+    love.graphics.newImage('resources/maps.png'):getData(),
+    love.graphics.newImage('resources/directions.png'):getData(),
     LEVEL_SIZE,
     BLOCK_SIZE,
     tile_sheet_image,
@@ -109,7 +109,7 @@ function love.load(arg)
   level_manager:load_level()
 
   local player_display_coordinates = tools.find_center(DISPLAY_SIZE, BLOCK_SIZE)
-  local player_sheet_image = love.graphics.newImage('player_sheet.png')
+  local player_sheet_image = love.graphics.newImage('resources/player_sheet.png')
   local player_sheet = TileSheet(player_sheet_image, BLOCK_SIZE)
   local player_sprites = {
     idle = player_sheet:get_tiles(2),
@@ -128,7 +128,7 @@ function love.load(arg)
   player = Player(
     level_manager.entrance.coords,
     player_display_coordinates,
-    BLOCK_VECTOR, 
+    BLOCK_VECTOR,
     player_sheet_image,
     player_sprites,
     'idle',
@@ -167,14 +167,14 @@ function love.update(dt)
 
   if game_manager.phase == 'transitioning' then
     player.coords[1] = player.coords[1] + game_manager.transition_quadratics[game_manager.transition_phase]:execute(dt)
-    
+
     if game_manager.transition_phase == 1 and player.coords[1] < game_manager.transition_height then
       game_manager.transition_phase = 2
 
       level_manager:load_level()
       player.coords = level_manager:door_coords('entrance', player)
       player.coords[1] = player.coords[1] - game_manager.transition_height
-    
+
     elseif game_manager.transition_phase == 2 and game_manager.transition_quadratics[game_manager.transition_phase].completed then
       game_manager:reset_transition()
       game_manager.phase = 'doors'
@@ -228,7 +228,7 @@ function love.update(dt)
       end
 
       if not wall_direction and player.wall_direction then
-        player:slide()     
+        player:slide()
       end
 
       for _, block in pairs(level_manager.tiles) do
@@ -241,7 +241,7 @@ function love.update(dt)
           if player:inside(block) then
             game_manager.phase = 'doors'
             game_manager.door = 'exit'
-            level_manager.exit.sprite_index = 2 
+            level_manager.exit.sprite_index = 2
             player.coords = level_manager:door_coords('exit', player)
             player:reset_velocity()
             player:reset_sprites()
