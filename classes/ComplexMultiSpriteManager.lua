@@ -25,6 +25,6 @@ local function constructor(t, coords, sprite_sheet, sprites, defualt_sprite_type
 end
 
 classtools.inherit(ComplexMultiSpriteManager, MultiSpriteManager)
-classtools.callable(ComplexMultiSpriteManager, constructor, Thing)
+classtools.callable(ComplexMultiSpriteManager)
 
 return ComplexMultiSpriteManager

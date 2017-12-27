@@ -34,21 +34,13 @@ end
 )
 
 M.callable = metatable_check(
-function(class, constructor, ...)
-  local parents = {...}
-  local parent
-  table.insert(parents, 1, class)
-  parent = parent_function(parents)
+function(class)
   local instance_mt = tools.copy(getmetatable(class))
-  instance_mt.__index = parent
+  instance_mt.__index = class
 
   local function new(t, ...)
     local instance = setmetatable({}, instance_mt)
-    if constructor then
-      constructor(instance, ...)
-    else
-      instance:constructor(...)
-    end
+    instance:constructor(...)
     return instance
   end
   getmetatable(class).__call = new

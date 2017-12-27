@@ -21,6 +21,6 @@ local function constructor(t, coords, sprite_sheet, sprites, speed, size, direct
 end
 
 classtools.inherit(SimpleMultiSpriteManager, MultiSpriteManager)
-classtools.callable(SimpleMultiSpriteManager, constructor, Thing)
+classtools.callable(SimpleMultiSpriteManager)
 
 return SimpleMultiSpriteManager

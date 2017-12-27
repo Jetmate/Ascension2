@@ -16,6 +16,6 @@ local function constructor(t, coords, sprite_sheet, sprite, size, directions)
 end
 
 classtools.inherit(SingleSpriteManager, SpriteManager)
-classtools.callable(SingleSpriteManager, constructor, Thing)
+classtools.callable(SingleSpriteManager)
 
 return SingleSpriteManager

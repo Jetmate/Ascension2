@@ -46,101 +46,109 @@ function love.load(arg)
     2
   )
 
+  do
+    local sheet_image = love.graphics.newImage('resources/tile_sheet.png')
+    local sheet = TileSheet(sheet_image, BLOCK_SIZE)
+    local sprites = {
+      block = sheet:get_tile(),
+      background = sheet:get_tile(),
+      entrance = sheet:get_equal_sprites(Vector(17, 18), 10),
+      spike = sheet:get_tile()
+    }
+    sprites.exit = tools.reverse(sprites.entrance)
 
-  local tile_sheet_image = love.graphics.newImage('resources/tile_sheet.png')
-  local tile_sheet = TileSheet(tile_sheet_image, BLOCK_SIZE)
-  local tile_sprites = {
-    block = tile_sheet:get_tile(),
-    background = tile_sheet:get_tile(),
-    entrance = tile_sheet:get_equal_sprites(Vector(17, 18), 10),
-    spike = tile_sheet:get_tile()
-  }
-  tile_sprites.exit = tools.reverse(tile_sprites.entrance)
+    local sprite_speeds = {
+      entrance = .15
+    }
+    sprite_speeds.exit = sprite_speeds.entrance
+    local default_sprite_speed = .5
 
-  local tile_sprite_speeds = {
-    entrance = .15
-  }
-  tile_sprite_speeds.exit = tile_sprite_speeds.entrance
-
-  local function convert_to_color(number, color_amount)
-    base = color_amount + 1
-    a = math.floor(number / base ^ 2)
-    number = number - a * base ^ 2
-    b = math.floor(number / base)
-    number = number - b * base
-    factor = 255 / color_amount
-    return Color(number * factor, b * factor, a * factor)
-  end
-
-  local function generate_color_values(names, color_amount)
-    t = {}
-    for i, name in ipairs(names) do
-      t[tostring(convert_to_color(i - 1, color_amount))] = name
+    local function convert_to_color(number, color_amount)
+      base = color_amount + 1
+      a = math.floor(number / base ^ 2)
+      number = number - a * base ^ 2
+      b = math.floor(number / base)
+      number = number - b * base
+      factor = 255 / color_amount
+      return Color(number * factor, b * factor, a * factor)
     end
-    return t
+
+    local function generate_color_values(names, color_amount)
+      t = {}
+      for i, name in ipairs(names) do
+        t[tostring(convert_to_color(i - 1, color_amount))] = name
+      end
+      return t
+    end
+
+    local names = {'block', 'entrance', 'exit', 'spike'}
+    local color_values = generate_color_values(names, COLOR_AMOUNT)
+
+    local direction_names = {math.pi * 3 / 2, math.pi / 2, 0, math.pi}
+    local direction_values = generate_color_values(direction_names, COLOR_AMOUNT)
+
+    local offsets = {
+      entrance = Vector(2, 3)
+    }
+    offsets.exit = offsets.entrance
+    local types = {solid = {'block'}, directional = {'spike'}}
+
+    level_manager = LevelManager(
+      love.graphics.newImage('resources/maps.png'):getData(),
+      love.graphics.newImage('resources/directions.png'):getData(),
+      LEVEL_SIZE,
+      BLOCK_SIZE,
+      sheet_image,
+      sprites,
+      sprite_speeds,
+      default_sprite_speed,
+      color_values,
+      offsets,
+      types,
+      direction_values
+    )
+    level_manager:load_level()
   end
 
-  local tile_names = {'block', 'entrance', 'exit', 'spike'}
-  local tile_color_values = generate_color_values(tile_names, COLOR_AMOUNT)
+  do
+    local display_coordinates = tools.find_center(DISPLAY_SIZE, BLOCK_SIZE)
+    local sheet_image = love.graphics.newImage('resources/player_sheet.png')
+    local sheet = TileSheet(sheet_image, BLOCK_SIZE)
+    local sprites = {
+      idle = sheet:get_tiles(2),
+      moving = sheet:get_tiles(4),
+      pressing = sheet:get_tile(),
+      jumping = sheet:get_tile(),
+      sliding = sheet:get_tile(),
+      dying = sheet:get_equal_sprites(Vector(13, 11), 5)
+    }
+    local sprite_speeds = {
+      idle = .6,
+      moving = .15,
+      dying = .15
+    }
+    local keys = {right = 'd', left = 'a', jump = 'w'}
+    local movement_speed = 60
+    local jump_vector = Vector(.5, -42)
+    local wall_jump_vector = Vector(.3, 30)
+    player = Player(
+      level_manager.entrance.coords,
+      display_coordinates,
+      BLOCK_VECTOR,
+      sheet_image,
+      sprites,
+      'idle',
+      sprite_speeds,
+      keys,
+      movement_speed,
+      jump_vector,
+      GRAVITY,
+      wall_jump_vector
+    )
 
-  local direction_names = {math.pi * 3 / 2, math.pi / 2, 0, math.pi}
-  local direction_values = generate_color_values(direction_names, COLOR_AMOUNT)
+    love.graphics.translate(display_coordinates:expand())
+  end
 
-  local tile_offsets = {
-    entrance = Vector(2, 3)
-  }
-  tile_offsets.exit = tile_offsets.entrance
-  local tile_types = {solid = {'block'}, directional = {'spike'}}
-
-  level_manager = LevelManager(
-    love.graphics.newImage('resources/maps.png'):getData(),
-    love.graphics.newImage('resources/directions.png'):getData(),
-    LEVEL_SIZE,
-    BLOCK_SIZE,
-    tile_sheet_image,
-    tile_sprites,
-    tile_sprite_speeds,
-    .5,
-    tile_color_values,
-    tile_offsets,
-    tile_types,
-    direction_values
-  )
-  level_manager:load_level()
-
-  local player_display_coordinates = tools.find_center(DISPLAY_SIZE, BLOCK_SIZE)
-  local player_sheet_image = love.graphics.newImage('resources/player_sheet.png')
-  local player_sheet = TileSheet(player_sheet_image, BLOCK_SIZE)
-  local player_sprites = {
-    idle = player_sheet:get_tiles(2),
-    moving = player_sheet:get_tiles(4),
-    pressing = player_sheet:get_tile(),
-    jumping = player_sheet:get_tile(),
-    sliding = player_sheet:get_tile(),
-    dying = player_sheet:get_equal_sprites(Vector(13, 11), 5)
-  }
-  local player_sprite_speeds = {
-    idle = .6,
-    moving = .15,
-    dying = .15
-  }
-  local player_keys = {right = 'd', left = 'a', jump = 'w'}
-  player = Player(
-    level_manager.entrance.coords,
-    player_display_coordinates,
-    BLOCK_VECTOR,
-    player_sheet_image,
-    player_sprites,
-    'idle',
-    player_sprite_speeds,
-    player_keys,
-    60,
-    Vector(.5, -42),
-    GRAVITY,
-    Vector(.3, 30)
-  )
-
-  love.graphics.translate(player_display_coordinates:expand())
   love.graphics.scale(SCALES[SCALE_INDEX])
 end
 
